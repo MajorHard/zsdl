@@ -11,6 +11,28 @@ pub const SdlError = error{
 };
 pub const getError = c.SDL_GetError;
 
+// Hints
+pub const HintPriority = enum {
+    Default,
+    Normal,
+    Override,
+
+    pub fn toC(self: HintPriority) c.SDL_HintPriority  {
+        return switch(self) {
+            .Default => c.SDL_HintPriority.SDL_HINT_DEFAULT,
+            .Normal => c.SDL_HintPriority.SDL_HINT_NORMAL,
+            .Override => c.SDL_HintPriority.SDL_HINT_OVERRIDE,
+        };
+    }
+};
+
+pub fn setHintWithPriority(name: [*c]const u8, value: [*c]const u8, priority: HintPriority) bool {
+    switch(c.SDL_SetHintWithPriority(name, value, priority.toC())) {
+        .SDL_FALSE => return false,
+        .SDL_TRUE => return true,
+        else => unreachable,
+    }
+}
 // Type Definitions
 pub const Window = c.SDL_Window;
 pub const GlContext = c.SDL_GLContext;
@@ -126,7 +148,7 @@ pub fn createWindow(title: [*c]const u8, x: i32, y: i32, w: i32, h: i32, flags: 
 pub const destroyWindow = c.SDL_DestroyWindow;
 pub const getTicks = c.SDL_GetTicks;
 
-pub inline fn ASSERT_OK(result: var) void {
+pub inline fn ASSERT_OK(result: var, message: []const u8) void {
     if (result == 0) return;
-    panic("SDL Panic: {}\n", .{getError()});
+    panic("SDL Error: {} - {}\n", .{ message, getError()});
 }
