@@ -1,10 +1,12 @@
 const panic = @import("std").debug.panic;
 pub const c = @import("c.zig");
 pub const event = @import("sdl/event.zig");
+pub const hint = @import("sdl/hint.zig");
 
 // Errors
 pub const SdlError = error{
     WindowCreation,
+    RendererCreation,
     GlContextCreation,
     NoOpenGlContext,
     NoOpenGlAttachedToWindow,
@@ -37,6 +39,7 @@ pub fn setHintWithPriority(name: [*c]const u8, value: [*c]const u8, priority: Hi
 pub const Window = c.SDL_Window;
 pub const GlContext = c.SDL_GLContext;
 pub const Event = c.SDL_Event;
+pub const Renderer = c.SDL_Renderer;
 
 // Init Variables
 pub const init_timer = c.SDL_INIT_TIMER;
@@ -147,6 +150,20 @@ pub fn createWindow(title: [*c]const u8, x: i32, y: i32, w: i32, h: i32, flags: 
 
 pub const destroyWindow = c.SDL_DestroyWindow;
 pub const getTicks = c.SDL_GetTicks;
+
+// Renderer Creation Functions
+pub const renderer_software = c.SDL_RENDERER_SOFTWARE;
+pub const renderer_accelerated = c.SDL_RENDERER_ACCELERATED;
+pub const renderer_presentvsync = c.SDL_RENDERER_PRESENTVSYNC;
+pub const renderer_targettexture = c.SDL_RENDERER_TARGETTEXTURE;
+
+pub fn createRenderer(window: *Window, index: c_int, flags: c_uint) !*Renderer {
+    if (c.SDL_CreateRenderer(window, index, flags)) |renderer| {
+        return renderer;
+    }
+    return SdlError.RendererCreation;
+}
+pub const destroyRenderer = c.SDL_DestroyRenderer;
 
 pub inline fn ASSERT_OK(result: var, message: []const u8) void {
     if (result == 0) return;
