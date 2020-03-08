@@ -165,7 +165,7 @@ pub fn createRenderer(window: *Window, index: c_int, flags: c_uint) !*Renderer {
 }
 pub const destroyRenderer = c.SDL_DestroyRenderer;
 
-pub inline fn ASSERT_OK(result: var, message: []const u8) void {
+pub inline fn ASSERT_OK(result: var) void {
     if (result == 0) return;
-    panic("SDL Error: {} - {}\n", .{ message, getError()});
+    panic("SDL Error: {}\n", .{ getError()});
 }
