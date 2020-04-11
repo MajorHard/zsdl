@@ -169,3 +169,6 @@ pub inline fn ASSERT_OK(result: var) void {
     if (result == 0) return;
     panic("SDL Error: {}\n", .{ getError()});
 }
+
+pub const getPerformanceCounter = c.SDL_GetPerformanceCounter;
+pub const getPerformanceFrequency = c.SDL_GetPerformanceFrequency;
